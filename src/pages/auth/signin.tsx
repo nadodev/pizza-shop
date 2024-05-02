@@ -1,14 +1,35 @@
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-export function Signin() {
-  const { register, handleSubmit } = useForm()
 
-  function handleSiginin() {}
+const signinForm = z.object({
+  email: z.string().email({ message: 'E-mail invalido' }),
+})
+
+type SigninForm = z.infer<typeof signinForm>
+export function Signin() {
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<SigninForm>()
+
+  async function handleSiginin(data: SigninForm) {
+    console.log(data)
+    toast.success('My first toast', {
+      action: {
+        label: 'Reenviar',
+        onClick: () => {},
+      },
+    })
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+  }
 
   return (
     <>
@@ -31,12 +52,12 @@ export function Signin() {
             onSubmit={handleSubmit(handleSiginin)}
           >
             <div className="space-y-2">
-              <Label htmlFor="email" {...register('email')}>
-                Seu e-mail
-              </Label>
-              <Input />
+              <Label htmlFor="email">Seu e-mail</Label>
+              <Input {...register('email')} />
             </div>
-            <Button className="w-full">Acessar Painel</Button>
+            <Button className="w-full" disabled={isSubmitting}>
+              Acessar Painel
+            </Button>
           </form>
         </div>
       </div>
